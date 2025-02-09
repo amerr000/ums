@@ -12,26 +12,35 @@ class AuthController extends Controller
 {
     
 
-
+  // now we want to create a login function that generates a token if the teacher really exist in the teacher table
     public function login(Request $request)
     {
-       
-        //now we have to check if the the teacher exist in the teacher table
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+        
+        // check if the teacher exist in the teacher table
         $teacher = Teacher::where('email', $request->email)->first();
-        if (!$teacher || !($request->password == $teacher->password)) {
+        
+        // if the teacher does not exist
+        if (! $teacher || !($request->password == $teacher->password)) {
             return response([
-                'message' => ['Invalid credentials']
-            ], 401);
+                'message' => ['The provided credentials are incorrect.']
+            ], 404);
         }
-        else{
-            $token = $teacher->createToken('authToken')->plainTextToken;
-
-            return response([
-                'message' => ['Login successful'],
-                'token' => $token
-            ], 200);
-        }
+        
+        // if the teacher exist
+        $token = $teacher->createToken('token-name')->plainTextToken;
+        
+        return response([
+            'message' => "login successful",
+            'token' => $token
+        ], 200);
     }
+
+
+
 
     public function logout(Request $request)
     {

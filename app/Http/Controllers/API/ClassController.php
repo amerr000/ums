@@ -14,15 +14,49 @@ class ClassController extends Controller
     //
 
 
-    //now we will fetch all the uniclass table data and return it as a json response for a specific teacher
+    //now we will fetch all the uniclass table data and return it as a json response for a specific teacher and i want to return the teacher name too
 
     public function index(Request $request)
     {
+        // Fetch all classes for the logged-in teacher
         $uniclasses = Uniclass::where('teacher_id', $request->user()->id)->get();
+    
+        // Fetch the teacher's name (assuming teacher's ID is the same as the logged-in user)
+        $teacherName = Teacher::where('id', $request->user()->id)->first();
+    
+        // Add the teacher's name to each class in the collection
+        $uniclasses->map(function($class) use ($teacherName) {
+            $class->teacher_name = $teacherName ? $teacherName->fullname : 'Unknown';
+        });
+    
+        // Return the response with classes and teacher name
         return response([
             'uniclasses' => $uniclasses
         ], 200);
     }
+    //now in the same way as before we are going to get all classes of a teacher but we will return the classes now that has archived as true and the teacher name
+    public function viewCurrentTermClasses(Request $request)
+    {
+        // Fetch all archived classes for the logged-in teacher
+        $uniclasses = Uniclass::where('teacher_id', $request->user()->id)->where('archived', false)->get();
+    
+        // Fetch the teacher's name (assuming teacher's ID is the same as the logged-in user)
+        $teacherName = Teacher::where('id', $request->user()->id)->first();
+    
+        // Add the teacher's name to each class in the collection
+        $uniclasses->map(function($class) use ($teacherName) {
+            $class->teacher_name = $teacherName ? $teacherName->fullname : 'Unknown';
+        });
+    
+        // Return the response with classes and teacher name
+        return response([
+            'uniclasses' => $uniclasses
+        ], 200);
+    }
+
+
+  
+
 
 
 
@@ -115,12 +149,10 @@ public function deleteClass(Request $request, $id)
 
 
 
-
-    //now we will create a new class in the database note that the teacher name will also be given so we are going to search for the teacher id based on the teacher name
+// now we are going to add a class to the table called uniclass and we will validate the request data and then we will check if the class already exists in the database
     public function addClass(Request $request)
 {
     $validatedData = $request->validate([
-        'archived' => 'required|boolean',
         'class_name' => 'required|string|max:255',
         'code' => 'required|string|max:50',
         'description' => 'required|string',
@@ -129,7 +161,6 @@ public function deleteClass(Request $request, $id)
         'schedule' => 'required|string|max:255',
         'semester' => 'required|string|max:50',
         'room_number' => 'required|string|max:50',
-        'teacher_name' => 'required|string|max:255',
     ]);
     
     // Manually check if a class with identical fields exists
@@ -143,16 +174,17 @@ public function deleteClass(Request $request, $id)
         ->where('semester', $request->semester)
         ->where('room_number', $request->room_number)
         ->exists();
-    
-    if ($duplicate) {
-        return response()->json(['error' => 'A class with these exact details already exists. Please modify at least one field.'], 422);
-    }
-    // Find the teacher
-    $teacher = Teacher::where('fullname', $validatedData['teacher_name'])->first();
 
-    // Create new class
+    if ($duplicate) {
+        return response([
+            'message' => 'Class already exists'
+        ], 409); // Conflict
+    }
+
+    // Create the class if it doesnt exist and assign the class to the current authenticated teacher note that also the archived is by default false
     $uniclass = new Uniclass();
-    $uniclass->archived = $validatedData['archived'];
+    $uniclass->teacher_id = $request->user()->id;
+    $uniclass->archived = false;
     $uniclass->class_name = $validatedData['class_name'];
     $uniclass->code = $validatedData['code'];
     $uniclass->description = $validatedData['description'];
@@ -161,14 +193,17 @@ public function deleteClass(Request $request, $id)
     $uniclass->schedule = $validatedData['schedule'];
     $uniclass->semester = $validatedData['semester'];
     $uniclass->room_number = $validatedData['room_number'];
-    $uniclass->teacher_id = $teacher->id;
-
-    // Save the class
     $uniclass->save();
 
     return response([
-        'message' => 'Class created successfully'
-    ], 200);
+        'message' => 'Class added successfully'
+    ], 201);
+
+
+
+
+    
+
 }
 
 
@@ -184,15 +219,7 @@ public function deleteClass(Request $request, $id)
 
 
 
-    //now we are going to return the courses that have archived column false and belong to the current logged in teacher
-    public function viewCurrentTermClasses(Request $request)
-    {
-        $uniclasses = Uniclass::where('teacher_id', $request->user()->id)->where('archived', false)->get();
-        return response([
-            'uniclasses' => $uniclasses
-        ], 200);
-    }
-
+    
 
     //now we are going to edit a specific class in the database first we want to return the column values of this class and then if the data is updated we will save the new data
     public function editClass(Request $request, $id){
