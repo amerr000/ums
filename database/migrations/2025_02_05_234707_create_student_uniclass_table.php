@@ -16,11 +16,11 @@ return new class extends Migration
             $table->foreignId('uniclass_id')->constrained();
             $table->boolean('status');
             $table->string('date');
-            $table->string('absence_cause');
+            $table->string('absence_cause')->nullable();
             $table->timestamps();
 
             // Composite primary key (student_id and uniclass_id together)
-            $table->primary(['student_id', 'uniclass_id']);
+            $table->primary(['student_id', 'uniclass_id','date']);
         });
     }
 
