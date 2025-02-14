@@ -272,54 +272,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1001</td>
-                                                <td>John Doe</td>
-                                                <td class="bg-success status">Present</td>
-                                                <td><input type="text" class="cause"></td>
-                                                <td>
-                                                    <label class="switch">
-                                                        <input type="checkbox" name="attendance[1001]">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>1002</td>
-                                                <td>Jane Smith</td>
-                                                <td class="bg-danger status">Absent</td>
-                                                <td><input type="text" class="cause"></td>
-                                                <td>
-                                                    <label class="switch">
-                                                        <input type="checkbox" name="attendance[1002]">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>1003</td>
-                                                <td>Alex Johnson</td>
-                                                <td class="bg-success status">Present</td>
-                                                <td><input type="text" class="cause"></td>
-                                                <td>
-                                                    <label class="switch">
-                                                        <input type="checkbox" name="attendance[1003]">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>1004</td>
-                                                <td>Emily Davis</td>
-                                                <td class="bg-success status">Present</td>
-                                                <td><input type="text" class="cause"></td>
-                                                <td>
-                                                    <label class="switch">
-                                                        <input type="checkbox" name="attendance[1004]">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </td>
-                                            </tr>
+                                        <tr class="text-center bg-warning">
+    <td colspan="5" class="py-3 text-dark font-weight-bold" style="font-size: 1.25rem;">Please select a date to view the attendance for that day</td>
+</tr>
                                         </tbody>
                                     </table>
                                     <button type="submit" class="btn btn-primary">Submit Attendance</button>
@@ -335,7 +290,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h4>Student Attendance Overview</h4>
-                                <table class="table table-striped">
+                                <table class="table table-striped" id="summary-table">
                                     <thead>
                                         <tr>
                                             <th scope="col">Student ID</th>
@@ -347,30 +302,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>1001</td>
-                                            <td>John Doe</td>
-                                            <td>18</td>
-                                            <td>2</td>
-                                            <td>20</td>
-                                            <td>90%</td>
-                                        </tr>
-                                        <tr>
-                                            <td>1002</td>
-                                            <td>Jane Smith</td>
-                                            <td>15</td>
-                                            <td>5</td>
-                                            <td>20</td>
-                                            <td>75%</td>
-                                        </tr>
-                                        <tr>
-                                            <td>1003</td>
-                                            <td>Alex Johnson</td>
-                                            <td>19</td>
-                                            <td>1</td>
-                                            <td>20</td>
-                                            <td>95%</td>
-                                        </tr>
+                                        
                                     </tbody>
                                 </table>
                             </div>
@@ -437,6 +369,159 @@ logout();
 });
 }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const classId = urlParams.get('id'); 
+    const apiUrl = `http://localhost:8000/api/get-class-summary/${classId}`;
+
+    async function fetchClassSummary() {
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                populateClassSummary(data.summary);
+            } else {
+                console.error('Failed to fetch class summary:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching class summary:', error);
+        }
+    }
+
+    function populateClassSummary(summary) {
+        const tbody = document.getElementById('summary-table').getElementsByTagName('tbody')[0];
+        tbody.innerHTML = ''; // Clear existing rows
+
+        summary.forEach(student => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${student.university_id}</td>
+                <td>${student.fullname}</td>
+                <td>${student.present_count}</td>
+                <td>${student.absent_count}</td>
+                <td>${student.total_count}</td>
+                <td>${((student.present_count / student.total_count) * 100).toFixed(2)}%</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    fetchClassSummary();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const apiUrl = 'http://localhost:8000/api/get-attendance-details/1';
+    const attendanceDateInput = document.getElementById('attendanceDate');
+
+    async function fetchAttendanceDetails(date) {
+        try {
+            const response = await fetch(`${apiUrl}?date=${date}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                populateAttendanceTable(data.attendance_details);
+            } else {
+                console.error('Failed to fetch attendance details:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching attendance details:', error);
+        }
+    }
+
+    function populateAttendanceTable(details) {
+        const tbody = document.querySelector('table tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+
+        details.forEach(detail => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${detail.university_id}</td>
+                <td>${detail.fullname}</td>
+                <td class="${detail.status === 'present' ? 'bg-success' : 'bg-danger'} status">${detail.status.charAt(0).toUpperCase() + detail.status.slice(1)}</td>
+                <td><input type="text" class="cause" value="${detail.absence_cause || ''}"></td>
+                <td>
+                    <label class="switch">
+                        <input type="checkbox" name="attendance[${detail.university_id}]" ${detail.status === 'present' ? 'checked' : ''}>
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    attendanceDateInput.addEventListener('change', (event) => {
+        const selectedDate = event.target.value;
+        if (selectedDate) {
+            fetchAttendanceDetails(selectedDate);
+        }
+    });
+});
+
+
 
 
 

@@ -364,7 +364,44 @@ public function deleteClass(Request $request, $id)
 
 
 
+ //now we will retrieve the university_id, student name, present count, absent count, and total count of classes for each student in a class 
+ public function getClassSummary($class_id)
+{
+    // Retrieve the currently authenticated user (teacher)
+    $teacher = auth()->user();
 
+    // Get the class associated with this teacher
+    $class = $teacher->classes()->find($class_id);
+
+    // Check if the class exists
+    if (!$class) {
+        return response([
+            'message' => 'Class not found'
+        ], 404);
+    }
+
+    // Get the students in the class
+    $students = $class->studentEnrolled()->select('id', 'fullname', 'university_id')->get();
+
+    // Prepare the summary data
+    $summaryData = $students->map(function ($student) use ($class) {
+        $presentCount = $class->studentAttendances()->where('student_id', $student->id)->wherePivot('status', 1)->count();
+        $absentCount = $class->studentAttendances()->where('student_id', $student->id)->wherePivot('status', 0)->count();
+        $totalCount = $presentCount + $absentCount;
+
+        return [
+            'university_id' => $student->university_id,
+            'fullname' => $student->fullname,
+            'present_count' => $presentCount,
+            'absent_count' => $absentCount,
+            'total_count' => $totalCount,
+        ];
+    });
+
+    return response([
+        'summary' => $summaryData
+    ], 200);
+}
 
 
 

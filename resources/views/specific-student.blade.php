@@ -386,7 +386,7 @@
                     </div>
 
                     <!-- Save Button -->
-                    <a href="edit-student" class="btn btn-primary" id="save-button">Edit</a>
+                    <a href="edit-student" class="btn btn-primary" id="edit-button">Edit</a>
                     </form>
             </div>
         </div>
@@ -500,6 +500,163 @@ logout();
 });
 }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById("edit-button").href = `edit-student?id=${getClassIdFromURL()}`;
+    const id=getClassIdFromURL();
+    const apiUrl = `http://localhost:8000/api/get-student-summary/${id}`; // Update with the actual student ID
+
+    async function fetchStudentData() {
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                populateStudentProfile(data.student);
+                populateClassesTable(data.classes);
+            } else {
+                console.error('Failed to fetch student data:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching student data:', error);
+        }
+    }
+
+    function populateStudentProfile(student) {
+        document.querySelector('.profile-photo img').src = 'images/patients/patient_avatar.png'; // Update with actual image if available
+        document.querySelector('.text-center h3').textContent = student.fullname;
+        document.querySelector('.list-group-item:nth-child(1) strong').textContent = student.university_id;
+        document.querySelector('.list-group-item:nth-child(2) strong').textContent = student.study_mode;
+        document.querySelector('.list-group-item:nth-child(3) strong').textContent = student.nationality;
+        document.querySelector('.list-group-item:nth-child(4) strong').textContent = student.email;
+        document.querySelector('.list-group-item:nth-child(5) strong').textContent = student.gender;
+        document.querySelector('.list-group-item:nth-child(6) strong').textContent = student.age;
+        document.querySelector('.list-group-item:nth-child(7) strong').textContent = student.phone_number;
+       document.getElementById("teacher-note").value = student.note;
+
+    }
+
+    function populateClassesTable(classes) {
+        const tbody = document.querySelector('.table-blue tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+
+        classes.forEach(classData => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${classData.course_id}</td>
+                <td>${classData.class_name}</td>
+                <td>${classData.absences}</td>
+                <td>${classData.total_classes_conducted}</td>
+                <td>${classData.attendance_percentage.toFixed(2)}%</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    fetchStudentData();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+function getClassIdFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("id"); // Assumes URL is like `?id=1`
+    }
+
+    document.getElementById("save-button").href = `edit-student?id=${getClassIdFromURL()}`;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    document.getElementById('save-button').addEventListener('click', async function() {
+    // Get the note from the textarea
+    const note = document.getElementById('teacher-note').value;
+    
+    // Get the student ID from the URL
+    const studentId = getClassIdFromURL();
+    const url = `http://localhost:8000/api/update-student-note/${studentId}`;
+
+    // Prepare the request payload
+    const data = {
+        note: note
+    };
+
+    // Get the auth token from sessionStorage
+    const authToken = sessionStorage.getItem('authToken');
+
+    try {
+        // Send the request
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(data)
+        });
+
+        const responseData = await response.json();
+
+        if (response.ok) {
+            alert(responseData.message);
+        } else {
+            alert('An error occurred while updating the note: ' + responseData.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating the note.');
+    }
+});
+
+
+
+
+
+
+
 
 
 

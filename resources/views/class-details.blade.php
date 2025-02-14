@@ -273,7 +273,7 @@
         <a href="take-attendance?" id="attendanceLink" class="btn btn-primary">Take Attendance</a>
     </div>
     <div class="col-12">
-        <a href="view-attendance">
+        <a href="#" id="viewAttendaceLink">
             <button class="btn btn-info">View Attendance</button>
         </a>
     </div>
@@ -326,26 +326,21 @@
 
 
             <div class="search-students">
-        <div class="card">
-            <div class="card-header">
-                <h5>Search for Students to Enroll</h5>
+    <div class="card">
+        <div class="card-header">
+            <h5>Search for Students to Enroll</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="studentSearch" class="form-label">Search and Select Student:</label>
+                <input type="text" class="form-control" id="studentSearch" placeholder="Search by name or ID" autocomplete="off">
+                <ul class="list-group mt-2" id="studentResults" style="max-height: 200px; overflow-y: auto; display: none;"></ul>
             </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label for="studentSearch" class="form-label">Search and Select Student:</label>
-                    <select class="form-select" id="studentSearch" style="width: 100%;" aria-label="Select a student">
-                        <option value="">Search by name or ID</option>
-                        <option value="1">Sarah Connor (ID: 11223)</option>
-                        <option value="2">David Smith (ID: 33445)</option>
-                        <option value="3">Emily Davis (ID: 55678)</option>
-                        <option value="4">John Doe (ID: 99001)</option>
-                        <option value="5">Anna Bell (ID: 87654)</option>
-                    </select>
-                </div>
-                <button class="btn btn-success enroll-btn mt-3" id="enrollBtn">Enroll Selected Student</button>
-            </div>
+            <button class="btn btn-success enroll-btn mt-3" id="enrollBtn" disabled>Enroll Selected Student</button>
         </div>
     </div>
+</div>
+
 
 
 
@@ -467,6 +462,9 @@
            // Retrieve the token from sessionStorage
            const authToken = sessionStorage.getItem('authToken');
            const urlParams = new URLSearchParams(window.location.search);
+           const id = urlParams.get('id'); // Get the 'id' parameter from the URL
+
+           document.getElementById("viewAttendaceLink").href = `view-attendance?id=${id}`;
 
 // Get the value of the 'id' parameter
 if (authToken) {
@@ -758,32 +756,201 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+document.addEventListener("DOMContentLoaded", function () {
+    const studentSearch = document.getElementById("studentSearch");
+    const studentResults = document.getElementById("studentResults");
+    const enrollBtn = document.getElementById("enrollBtn");
+    let selectedStudentId = null;
 
-    $(document).ready(function() {
-        // Initialize Select2 for the dropdown
-        $('#studentSearch').select2({
-            placeholder: 'Search for students...',
-            allowClear: true,
-            // Dynamically fetching the students list (for demo, it's static)
-            data: [
-                { id: '1', text: 'Sarah Connor (ID: 11223)' },
-                { id: '2', text: 'David Smith (ID: 33445)' },
-                { id: '3', text: 'Emily Davis (ID: 55678)' },
-                { id: '4', text: 'John Doe (ID: 99001)' },
-                { id: '5', text: 'Anna Bell (ID: 87654)' }
-            ]
-        });
-        
-        // Enroll button action
-        $('#enrollBtn').click(function() {
-            var selectedStudent = $('#studentSearch').val();
-            if (selectedStudent) {
-                alert("Student " + selectedStudent + " has been enrolled.");
-            } else {
-                alert("Please select a student to enroll.");
+    const classId = new URLSearchParams(window.location.search).get("id"); // Get class ID from URL
+
+    studentSearch.addEventListener("input", async function () {
+        const searchQuery = studentSearch.value.trim();
+        if (searchQuery.length < 2) {
+            studentResults.style.display = "none";
+            return;
+        }
+
+        const token = sessionStorage.getItem("authToken");
+        if (!token) {
+            console.error("No auth token found!");
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8000/api/getNotRegisteredStudentsByName/${searchQuery}/${classId}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch students");
             }
-        });
+
+            const data = await response.json();
+            displayStudentResults(data.students);
+        } catch (error) {
+            console.error("Error fetching students:", error);
+        }
     });
+
+    function displayStudentResults(students) {
+        studentResults.innerHTML = "";
+        if (students.length === 0) {
+            studentResults.style.display = "none";
+            return;
+        }
+
+        students.forEach(student => {
+            const li = document.createElement("li");
+            li.classList.add("list-group-item", "list-group-item-action");
+            li.textContent = `${student.fullname} (ID: ${student.university_id})`;
+            li.dataset.id = student.id;
+
+            li.addEventListener("click", function () {
+                studentSearch.value = student.fullname;
+                selectedStudentId = student.id;
+                studentResults.style.display = "none";
+                enrollBtn.disabled = false;
+            });
+
+            studentResults.appendChild(li);
+        });
+
+        studentResults.style.display = "block";
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//here is the js to enroll the student 
+
+document.addEventListener("DOMContentLoaded", function () {
+    const enrollBtn = document.getElementById("enrollBtn");
+    const studentSearch = document.getElementById("studentSearch");
+    const studentResults = document.getElementById("studentResults");
+    let selectedStudentId = null;
+
+    const classId = getClassIdFromURL(); // Function to extract class ID from URL
+
+    enrollBtn.addEventListener("click", async function () {
+        if (!selectedStudentId) {
+            alert("Please select a student to enroll.");
+            return;
+        }
+
+        try {
+            const authToken = sessionStorage.getItem('authToken'); // Retrieve auth token
+            if (!authToken) {
+                alert("You are not authenticated.");
+                return;
+            }
+
+            const response = await fetch("http://localhost:8000/api/enrollStudent", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${authToken}`
+                },
+                body: JSON.stringify({
+                    student_id: selectedStudentId,
+                    class_id: classId
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert("Student successfully enrolled!");
+                document.getElementById("studentSearch").value = "";
+            } else {
+                alert(`Error: ${data.message || "Could not enroll student."}`);
+            }
+        } catch (error) {
+            console.error("Error enrolling student:", error);
+            alert("Something went wrong. Please try again.");
+        }
+    });
+
+    studentSearch.addEventListener("input", async function () {
+        const searchQuery = studentSearch.value.trim();
+        if (searchQuery.length < 2) {
+            studentResults.style.display = "none";
+            return;
+        }
+
+        const token = sessionStorage.getItem("authToken");
+        if (!token) {
+            console.error("No auth token found!");
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8000/api/getNotRegisteredStudentsByName/${searchQuery}/${classId}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch students");
+            }
+
+            const data = await response.json();
+            displayStudentResults(data.students);
+        } catch (error) {
+            console.error("Error fetching students:", error);
+        }
+    });
+
+    function displayStudentResults(students) {
+        studentResults.innerHTML = "";
+        if (students.length === 0) {
+            studentResults.style.display = "none";
+            return;
+        }
+
+        students.forEach(student => {
+            const li = document.createElement("li");
+            li.classList.add("list-group-item", "list-group-item-action");
+            li.textContent = `${student.fullname} (ID: ${student.university_id})`;
+            li.dataset.id = student.id;
+
+            li.addEventListener("click", function () {
+                studentSearch.value = student.fullname;
+                selectedStudentId = student.id;
+                studentResults.style.display = "none";
+                enrollBtn.disabled = false;
+            });
+
+            studentResults.appendChild(li);
+        });
+
+        studentResults.style.display = "block";
+    }
+
+    function getClassIdFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("id"); // Assumes URL is like `?id=1`
+    }
+});
 
 
     </script>

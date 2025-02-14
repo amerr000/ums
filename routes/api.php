@@ -47,7 +47,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('unarchive-class/{id}','App\Http\Controllers\API\ClassController@unarchiveClass');// this should be added to postman
     Route::get('getCourseIdNameSection/{search}','App\Http\Controllers\API\ClassController@getCourseIdNameSection');// this should be added to postman
     Route::get('getStudentIdName/{search}','App\Http\Controllers\API\StudentController@getStudentByName');// this should be added to postman
-    Route::get('getNotRegisteredStudentsByName/{search}','App\Http\Controllers\API\StudentController@getNotRegisteredStudentsByName');// this should be added to postman
+    Route::get('getNotRegisteredStudentsByName/{search}/{classId}','App\Http\Controllers\API\StudentController@getNotRegisteredStudentsByName');
+    Route::post('enrollStudent','App\Http\Controllers\API\StudentController@enrollStudent');
+    Route::get('get-attendance-details/{id}','App\Http\Controllers\API\StudentController@getAttendanceDetails');
+    Route::get('get-class-summary/{id}','App\Http\Controllers\API\ClassController@getClassSummary');
+    Route::get('get-student-summary/{id}','App\Http\Controllers\API\StudentController@getStudentCourses');
+    Route::post('update-student-note/{id}','App\Http\Controllers\API\StudentController@updateStudentNote');
+    Route::get('show-student/{id}','App\Http\Controllers\API\StudentController@showStudent');
 
 
 
