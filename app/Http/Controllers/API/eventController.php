@@ -14,34 +14,32 @@ class eventController extends Controller
     {
         // Validate the request
         $request->validate([
-            'title' => 'required|string',
-            'description' => 'string',
-            'date' => 'required|date',
-            'time' => 'required|string',
-            'category' => 'required|string',]);
-
+            'event_name' => 'required|string',
+            'description' => 'nullable|string',
+            'event_start_date_and_time' => 'required|date',
+            'event_end_date_and_time' => 'required|date|after:event_start_date_and_time',
+            'category' => 'required|string',
+        ]);
+    
         // Retrieve the currently authenticated user (teacher)
         $teacher = auth()->user();
-
+    
         // Create the event
         $event = $teacher->events()->create([
-            'title' => $request->title,
+            'event_name' => $request->event_name,
             'description' => $request->description,
-            'date' => $request->date,
-            'time' => $request->date,
-            'category' => $request->category
+            'event_start_date_and_time' => $request->event_start_date_and_time,
+            'event_end_date_and_time' => $request->event_end_date_and_time,
+            'category' => $request->category,
+            'teacher_id' => $teacher->id
         ]);
-
-       //now we want to insert the data in the database like here the teacher has created an event
-
-
+    
         return response([
             'message' => 'Event created successfully'
         ], 201);
     }
 
-
-
+       
     public function deleteEvent($id)
     {
         // Retrieve the currently authenticated user (teacher)
@@ -82,20 +80,16 @@ class eventController extends Controller
         } else {
             // Validate the request
             $request->validate([
-                'title' => 'required|string',
-                'description' => 'string',
-                'date' => 'required|date',
-                'time' => 'required|string',
-                'category' => 'required|string',
+                'event_name' => 'required|string',
+            'description' => 'nullable|string',
+            'category' => 'required|string',
             ]);
 
             // Update the event
             $event->update([
-                'title' => $request->title,
+                'event_name' => $request->event_name,
                 'description' => $request->description,
-                'date' => $request->date,
-                'time' => $request->time,
-                'category' => $request->category
+                'category' => $request->category,
             ]);
 
             return response([
@@ -105,13 +99,18 @@ class eventController extends Controller
     }
 
 
-    public function viewAllEvents()
+    public function index()
     {
         // Retrieve the currently authenticated user (teacher)
         $teacher = auth()->user();
 
         // Get all the events associated with this teacher
         $events = $teacher->events;
+        if ($events->isEmpty()) {
+            return response([
+                'message' => 'No events found'
+            ], 404);
+        }
 
         return response([
             'events' => $events
@@ -119,7 +118,7 @@ class eventController extends Controller
     }
 
     //now we will make a function to view a certain event
-    public function viewSpecificEvent($id)
+    public function showSpecificEvent($id)
     {
         // Retrieve the currently authenticated user (teacher)
         $teacher = auth()->user();

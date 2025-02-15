@@ -15,6 +15,15 @@
     <link href="css/style.css" rel="stylesheet">
 
     <style>
+
+
+
+
+.fc-time-grid .fc-slats td {
+    height: 50px !important; /* Adjust as needed */
+}
+
+
   .nav-header {
     display: flex;
     justify-content: space-between;
@@ -344,6 +353,210 @@ logout();
 });
 }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).ready(function() {
+    var authToken = sessionStorage.getItem('authToken');
+
+    var calendar = $('#calendar').fullCalendar({
+        slotDuration: "00:15:00",
+        slotLabelInterval: "00:15:00", // Labels every 30 minutes (prevents splitting)
+
+        minTime: "08:00:00",
+        maxTime: "19:00:00",
+        defaultView: "month",
+        handleWindowResize: true,
+        height: $(window).height() - 100,
+        
+        header: {
+            left: "prev,next today",
+            center: "title",
+            right: "month,agendaDay"
+        },
+        events: function(start, end, timezone, callback) {
+            $.ajax({
+                url: 'http://localhost:8000/api/view-all-events',
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                },
+                success: function(data) {
+                    var events = [];
+                    $(data.events).each(function() {
+                        events.push({
+                            id: this.id,
+                            title: this.event_name,
+                            start: this.event_start_date_and_time,
+                            end: this.event_end_date_and_time,
+                            className: this.category,
+                            description: this.description
+                        });
+                    });
+                    callback(events);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching events:', error);
+                }
+            });
+        },
+        editable: true,
+        droppable: true,
+        eventLimit: true,
+        selectable: true,
+        drop: function(date) {
+            onDrop($(this), date);
+        },
+        select: function(start, end) {
+            onSelect(start, end);
+        },
+        eventClick: function(event) {
+            onEventClick(event);
+        }
+    });
+
+    function onDrop(event, date) {
+        var eventObject = event.data('eventObject');
+        var categoryClass = event.attr('data-class');
+        var newEvent = $.extend({}, eventObject);
+        newEvent.start = date;
+        if (categoryClass) {
+            newEvent.className = [categoryClass];
+        }
+        $('#calendar').fullCalendar('renderEvent', newEvent, true);
+        if ($('#drop-remove').is(':checked')) {
+            event.remove();
+        }
+    }
+
+    function onSelect(start, end) {
+        var modal = $('#event-modal');
+        var form = $("<form></form>");
+        form.append("<div class='row'></div>");
+        form.find(".row")
+            .append("<div class='col-md-6'><div class='form-group'><label class='control-label'>Event Name</label><input class='form-control' placeholder='Enter Event Name' type='text' name='title'/></div></div>")
+            .append("<div class='col-md-6'><div class='form-group'><label class='control-label'>Category</label><select class='form-control' name='category'></select></div></div>")
+            .append("<div class='col-md-12'><div class='form-group'><label class='control-label'>Description</label><textarea class='form-control' placeholder='Enter Description' name='description'></textarea></div></div>");
+        form.find("select[name='category']")
+            .append("<option value='bg-danger'>High Priority</option>")
+            .append("<option value='bg-warning'>Normal Priority</option>")
+            .append("<option value='bg-primary'>Low Priority</option>");
+        modal.find(".delete-event").hide().end().find(".save-event").show().end().find(".modal-body").empty().prepend(form).end().find(".save-event").unbind("click").on("click", function() {
+            form.submit();
+        });
+        modal.find("form").on("submit", function() {
+            var title = form.find("input[name='title']").val();
+            var category = form.find("select[name='category'] option:checked").val();
+            var description = form.find("textarea[name='description']").val();
+            if (title) {
+
+                console.log('Event Start:', start.format());  // Log the start date and time
+                console.log('Event End:', end.format());   
+                $.ajax({
+                    url: 'http://localhost:8000/api/create-event',
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        event_name: title,
+                        description: description,
+                        event_start_date_and_time: start.format(),
+                        event_end_date_and_time: end.format(),
+                        category: category
+                    }),
+                    success: function() {
+                        $('#calendar').fullCalendar('refetchEvents');
+                        modal.modal('hide');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error creating event:', error);
+                    }
+                });
+            } else {
+                alert("You have to give a title to your event");
+            }
+            return false;
+        });
+        modal.modal({
+            backdrop: "static"
+        });
+        $('#calendar').fullCalendar('unselect');
+    }
+
+    function onEventClick(event) {
+        var modal = $('#event-modal');
+        var form = $("<form></form>");
+        form.append("<label>Change event name</label>");
+        form.append("<div class='input-group'><input class='form-control' type='text' value='" + event.title + "' /><span class='input-group-btn'><button type='submit' class='btn btn-success waves-effect waves-light'><i class='fa fa-check'></i> Save</button></span></div>");
+        form.append("<label>Change event description</label>");
+        form.append("<div class='form-group'><textarea class='form-control' name='description'>" + (event.description || '') + "</textarea></div>");
+        modal.find(".delete-event").show().end().find(".save-event").hide().end().find(".modal-body").empty().prepend(form).end().find(".delete-event").unbind("click").on("click", function() {
+            $.ajax({
+                url: 'http://localhost:8000/api/delete-event/' + event.id,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                },
+                success: function() {
+                    $('#calendar').fullCalendar('removeEvents', event.id);
+                    modal.modal('hide');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error deleting event:', error);
+                }
+            });
+        });
+        modal.find("form").on("submit", function() {
+            event.title = form.find("input[type=text]").val();
+            event.description = form.find("textarea[name='description']").val();
+            $.ajax({
+                url: 'http://localhost:8000/api/edit-event/' + event.id,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                    event_name: event.title,
+                    description: event.description,
+                    category: event.className[0]
+                }),
+                success: function() {
+                    $('#calendar').fullCalendar('updateEvent', event);
+                    modal.modal('hide');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating event:', error);
+                }
+            });
+            return false;
+        });
+        modal.modal({
+            backdrop: "static"
+        });
+    }
+});
+
 
 
 
