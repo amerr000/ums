@@ -54,6 +54,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('get-student-summary/{id}','App\Http\Controllers\API\StudentController@getStudentCourses');
     Route::post('update-student-note/{id}','App\Http\Controllers\API\StudentController@updateStudentNote');
     Route::get('show-student/{id}','App\Http\Controllers\API\StudentController@showStudent');
+    Route::post('edit-attendance/{courseId}','App\Http\Controllers\API\StudentController@updateAttendance');
 
 
 

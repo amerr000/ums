@@ -8,6 +8,7 @@ use App\Models\Teacher;
 use App\Models\Student;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -428,6 +429,7 @@ public function getAttendanceDetails(Request $request, $class_id)
             return [
                 'university_id' => $student->university_id,
                 'fullname' => $student->fullname,
+                "student_id"=>$student->id,
                 'status' => $attendance->pivot->status ? 'present' : 'absent',
                 'absence_cause' => $attendance->pivot->absence_cause,
             ];
@@ -556,6 +558,35 @@ public function showStudent($id)
             'student' => $student
         ], 200);
     }
+}
+
+
+//now we will write a function that updates the attendance of students on a specific date and specific class
+
+
+public function updateAttendance(Request $request, $classId)
+{
+    $request->validate([
+        'updates' => 'required|array',
+        'updates.*.student_id' => 'required|integer|exists:students,id',
+        'updates.*.status' => 'required',
+        'updates.*.absence_cause' => 'nullable|string',
+        'updates.*.date' => 'required|date',
+    ]);
+
+    foreach ($request->updates as $update) {
+        DB::table('student_uniclass')
+            ->where('student_id', $update['student_id'])
+            ->where('uniclass_id', $classId)
+            ->whereDate('date', $update['date'])
+            ->update([
+                'status' => $update['status'],
+                'absence_cause' => $update['absence_cause'],
+                'date' => $update['date'],
+            ]);
+    }
+
+    return response()->json(['message' => 'Attendance updated successfully.']);
 }
 
 

@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         courses.forEach(course => {
             const link = document.createElement("a");
-            link.href = `class-details.php?id=${course.id}`;
+            link.href = `class-details?id=${course.id}`;
             link.className = "dropdown-item";
             link.textContent = `${course.class_name} - Section ${course.section}`;
             resultsContainer.appendChild(link);

@@ -420,7 +420,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Display the students in the dropdown
         students.forEach(student => {
             const link = document.createElement("a");
-            link.href = `student-details?id=${student.id}`; // Assuming this is how you'll link to student details
+            link.href = `specific-student?id=${student.id}`; // Assuming this is how you'll link to student details
             link.className = "dropdown-item";
             link.textContent = `${student.fullname} - ID: ${student.university_id}`;
             resultsContainer.appendChild(link);

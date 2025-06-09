@@ -261,7 +261,7 @@
                     </div>
                
                                 <form action="class-details" method="POST">
-                                    <table class="table table-striped">
+                                    <table class="table table-striped" id="attendance-table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Student ID</th>
@@ -277,7 +277,7 @@
 </tr>
                                         </tbody>
                                     </table>
-                                    <button type="submit" class="btn btn-primary">Submit Attendance</button>
+                                    <button type="submit" id="submitAttendance" class="btn btn-primary">Submit Attendance</button>
                                 </form>
                             </div>
                         </div>
@@ -398,10 +398,6 @@ logout();
 
 
 
-
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const classId = urlParams.get('id'); 
@@ -466,13 +462,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// now i will write the code to update the attendance status and cause if any is changed and the api endpoint is http://localhost:8000/api/edit-attendance/${classId} knowing that the table that has the attendace has an id of attendance-table and the submit button has an id of submitAttendance
 document.addEventListener('DOMContentLoaded', () => {
-    const apiUrl = 'http://localhost:8000/api/get-attendance-details/1';
+    const urlParams = new URLSearchParams(window.location.search);
+    const classId = urlParams.get('id'); 
+    const apiUrl = `http://localhost:8000/api/edit-attendance/${classId}`;
     const attendanceDateInput = document.getElementById('attendanceDate');
+    const submitBtn = document.getElementById('submitAttendance');
+    const attendanceTable = document.querySelector('form table'); // or use an id for more specificity
+
+    if (!attendanceDateInput || !submitBtn || !attendanceTable) return;
 
     async function fetchAttendanceDetails(date) {
         try {
-            const response = await fetch(`${apiUrl}?date=${date}`, {
+            const response = await fetch(`http://localhost:8000/api/get-attendance-details/${classId}?date=${date}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
@@ -492,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateAttendanceTable(details) {
-        const tbody = document.querySelector('table tbody');
+        const tbody = attendanceTable.querySelector('tbody');
         tbody.innerHTML = ''; // Clear existing rows
 
         details.forEach(detail => {
@@ -504,14 +545,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><input type="text" class="cause" value="${detail.absence_cause || ''}"></td>
                 <td>
                     <label class="switch">
-                        <input type="checkbox" name="attendance[${detail.university_id}]" ${detail.status === 'present' ? 'checked' : ''}>
+                        <input type="checkbox" class="attendance" name="attendance[${detail.university_id}]" ${detail.status === 'present' ? 'checked' : ''}>
                         <span class="slider round"></span>
                     </label>
+                    <input type="hidden" name="student_id" value="${detail.student_id}">
                 </td>
             `;
             tbody.appendChild(row);
         });
     }
+
+    submitBtn.addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        const selectedDate = attendanceDateInput.value; // Get date from the input
+        if (!selectedDate) {
+            alert('Please select a date!');
+            return;
+        }
+
+        const attendanceData = [];
+        const rows = attendanceTable.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const studentId = row.querySelector('input[name="student_id"]')?.value.trim();
+            const universityId = row.querySelector('td:nth-child(1)')?.textContent.trim();
+            const statusCheckbox = row.querySelector('.attendance');
+            const causeInput = row.querySelector('.cause');
+
+            if (studentId && universityId && statusCheckbox && causeInput) {
+                attendanceData.push({
+                    student_id: studentId,           // important: send student_id for backend
+                    university_id: universityId,     // optional if needed
+                    status: statusCheckbox.checked ? 1 : 0, // 1 = present, 0 = absent
+                    absence_cause: causeInput.value.trim(),
+                    date: selectedDate
+                });
+            }
+        });
+
+        console.log('Attendance Data:', attendanceData);
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ updates: attendanceData }) // backend expects 'updates'
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert('Attendance updated successfully!');
+                location.reload();
+            } else {
+                console.error('Failed:', result);
+                alert(result.message || 'Failed to update attendance.');
+            }
+        } catch (error) {
+            console.error('Error updating attendance:', error);
+            alert('An error occurred while updating attendance.');
+        }
+    });
 
     attendanceDateInput.addEventListener('change', (event) => {
         const selectedDate = event.target.value;
@@ -520,6 +618,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+
+
 
 
 

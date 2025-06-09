@@ -279,104 +279,6 @@
 
 
 
-// Function to fetch student data from the API and populate the form
-async function fetchStudentData() {
-    // Get the authentication token from session storage
-    const authToken = sessionStorage.getItem('authToken');
-    
-    if (!authToken) {
-        alert('Authentication token not found!');
-        return;
-    }
-
-    // URL to fetch data from
-    const apiUrl = 'http://localhost:8000/api/view-students-in-class/1';
-
-    try {
-        // Fetch student data from the API
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        const data = await response.json();
-
-        // Check if the API returns students data
-        if (data && data.students && Array.isArray(data.students)) {
-            const studentDataContainer = document.querySelector('.student-data');
-            studentDataContainer.innerHTML = ''; // Clear any existing data in the table body
-
-            // Iterate through the students and populate the table
-            data.students.forEach(student => {
-                const row = document.createElement('tr');
-
-                // Add student ID
-                const studentIdCell = document.createElement('td');
-                studentIdCell.textContent = student.university_id;
-                row.appendChild(studentIdCell);
-
-                //now we will add an input type text that is hidded that we store in it the student_id
-                const studentIdInput = document.createElement('input');
-                studentIdInput.type = 'text';
-                studentIdInput.hidden = true;
-                studentIdInput.name = 'student_id';
-                studentIdInput.value = student.id;
-                row.appendChild(studentIdInput);
-                
-
-
-
-                // Add student name
-                const studentNameCell = document.createElement('td');
-                studentNameCell.textContent = student.fullname;
-                row.appendChild(studentNameCell);
-
-                // Add attendance checkbox with label and switch styling
-                const attendanceCell = document.createElement('td');
-                const attendanceLabel = document.createElement('label');
-                attendanceLabel.classList.add('switch');
-
-                const attendanceCheckbox = document.createElement('input');
-                attendanceCheckbox.type = 'checkbox';
-                attendanceCheckbox.name = `attendance[${student.id}]`; // Dynamic name for each student
-
-                const slider = document.createElement('span');
-                slider.classList.add('slider', 'round');
-
-                attendanceLabel.appendChild(attendanceCheckbox);
-                attendanceLabel.appendChild(slider);
-                attendanceCell.appendChild(attendanceLabel);
-                row.appendChild(attendanceCell);
-
-                // Add cause of absence text input
-                const causeCell = document.createElement('td');
-                const causeInput = document.createElement('input');
-                causeInput.type = 'text';
-                causeInput.classList.add('cause');
-                causeCell.appendChild(causeInput);
-                row.appendChild(causeCell);
-
-                // Append the row to the table body
-                studentDataContainer.appendChild(row);
-            });
-        } else {
-            console.error('No student data found.');
-        }
-    } catch (error) {
-        console.error('Error fetching student data:', error);
-    }
-}
-
-// Run the fetchStudentData function when the page is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    fetchStudentData();
-});
-
-
-
 
 
 
@@ -446,7 +348,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     alert('Attendance recorded successfully!');
-                    window.location.href = `/class-details?id=${classId}`;
+                    window.location.href = "{{ url('/class-details') }}" + "?id=" + classId;
+
+
 
                 } else {
                     alert(`Error: ${data.message || 'Failed to record attendance'}`);
@@ -470,7 +374,7 @@ async function fetchStudentData() {
     }
 
     // URL to fetch data from
-    const apiUrl = 'http://localhost:8000/api/view-students-in-class/1';
+    const apiUrl = 'http://localhost:8000/api/view-students-in-class/'+classId;
 
     try {
         // Fetch student data from the API
@@ -686,6 +590,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
+// Run the fetchStudentData function when the page is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    fetchStudentData();
+});
 
 
 

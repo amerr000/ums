@@ -77,7 +77,7 @@
                 if (data.token) {
                     // Successful login: Store the token in localStorage or sessionStorage
                     sessionStorage.setItem('authToken', data.token);
-                    window.location.href = '/all-classes'; // Redirect to your main page
+                    window.location.href = "{{ url('/all-classes') }}";
                 } else {
                     // Handle error if no token is returned
                     document.getElementById('error-message').textContent = 'Login failed, please try again.';
