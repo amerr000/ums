@@ -392,32 +392,38 @@ $(document).ready(function() {
             center: "title",
             right: "month,agendaDay"
         },
-        events: function(start, end, timezone, callback) {
-            $.ajax({
-                url: 'http://localhost:8000/api/view-all-events',
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                },
-                success: function(data) {
-                    var events = [];
-                    $(data.events).each(function() {
-                        events.push({
-                            id: this.id,
-                            title: this.event_name,
-                            start: this.event_start_date_and_time,
-                            end: this.event_end_date_and_time,
-                            className: this.category,
-                            description: this.description
-                        });
-                    });
-                    callback(events);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching events:', error);
-                }
-            });
+      events: function(start, end, timezone, callback) {
+    $.ajax({
+        url: 'http://localhost:8000/api/view-all-events',
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${authToken}`
         },
+        success: function(data) {
+            var events = [];
+            $(data.events).each(function() {
+                // Convert to ISO format with "T"
+                var startISO = this.event_start_date_and_time.replace(' ', 'T');
+                var endISO = this.event_end_date_and_time.replace(' ', 'T');
+                // Check if time is present
+                var hasTime = /\d{2}:\d{2}:\d{2}/.test(startISO);
+                events.push({
+                    id: this.id,
+                    title: this.event_name,
+                    start: startISO,
+                    end: endISO,
+                    className: this.category,
+                    description: this.description,
+                    allDay: !hasTime ? true : false // force allDay false if time exists
+                });
+            });
+            callback(events);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching events:', error);
+        }
+    });
+},
         editable: true,
         droppable: true,
         eventLimit: true,
@@ -447,7 +453,20 @@ $(document).ready(function() {
         }
     }
 
-    function onSelect(start, end) {
+function onSelect(start, end) {
+        let realStart = start;
+        let realEnd = end;
+        // If both times are midnight, it's a month view selection
+        if (start.format('HH:mm:ss') === '00:00:00' && end.format('HH:mm:ss') === '00:00:00') {
+            realStart = start.clone().set({ hour: 8, minute: 0, second: 0 });
+            // Set end to the same day as start, not end!
+            realEnd = start.clone().set({ hour: 8, minute: 15, second: 0 });
+        }
+
+        // Debug log
+        console.log('Event Start:', realStart.format('YYYY-MM-DD HH:mm:ss'));
+        console.log('Event End:', realEnd.format('YYYY-MM-DD HH:mm:ss'));
+
         var modal = $('#event-modal');
         var form = $("<form></form>");
         form.append("<div class='row'></div>");
@@ -467,9 +486,6 @@ $(document).ready(function() {
             var category = form.find("select[name='category'] option:checked").val();
             var description = form.find("textarea[name='description']").val();
             if (title) {
-
-                console.log('Event Start:', start.format());  // Log the start date and time
-                console.log('Event End:', end.format());   
                 $.ajax({
                     url: 'http://localhost:8000/api/create-event',
                     method: 'POST',
@@ -480,9 +496,10 @@ $(document).ready(function() {
                     data: JSON.stringify({
                         event_name: title,
                         description: description,
-                        event_start_date_and_time: start.format(),
-                        event_end_date_and_time: end.format(),
-                        category: category
+                        event_start_date_and_time: realStart.format('YYYY-MM-DD HH:mm:ss'),
+                        event_end_date_and_time: realEnd.format('YYYY-MM-DD HH:mm:ss'),
+                        category: category,
+                        allDay: false
                     }),
                     success: function() {
                         $('#calendar').fullCalendar('refetchEvents');

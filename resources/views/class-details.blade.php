@@ -501,7 +501,9 @@ if (authToken) {
                 <td>
                 <a href="edit-class?id=${uniclass.id}" class="btn btn-warning btn-sm">Edit</a>
                                 <button class="btn btn-danger btn-sm" onclick="confirmDelete()">Delete</button>
-                                <button class="btn btn-info btn-sm" onclick="archive()" >Archive</button>
+                                    ${uniclass.archived == 1 
+        ? `<button class="btn btn-success btn-sm" onclick="unarchive(${uniclass.id})">Unarchive</button>` 
+        : `<button class="btn btn-info btn-sm" onclick="archive(${uniclass.id})">Archive</button>`}
                 </td>
 
             </tr>
@@ -646,7 +648,7 @@ function archive() {
 
     // Make the API request
     fetch(apiUrl, {
-        method: 'POST',  // PATCH is better for updates instead of DELETE or POST
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authToken}`
@@ -657,7 +659,7 @@ function archive() {
         if (data.success) {
             alert("Class archived successfully!");
             // Optionally, redirect or update UI
-            window.location.href = "http://localhost/universitySystem/all-classes";
+            window.location.href = "http://localhost/ums/public/all-classes";
         } else {
             alert("Failed to archive class: " + (data.message || "Unknown error"));
         }
@@ -951,6 +953,101 @@ document.addEventListener("DOMContentLoaded", function () {
         return params.get("id"); // Assumes URL is like `?id=1`
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function unarchive() {
+    const classId = getCourseIdFromUrl(); // Function to extract class ID from URL
+
+    if (!classId) {
+        alert("Class ID not found in the URL.");
+        return;
+    }
+
+    const confirmation = confirm("Are you sure you want to unarchive this class?");
+    if (!confirmation) {
+        alert("Class unarchiving cancelled.");
+        return;
+    }
+
+    // Retrieve authentication token
+    const authToken = sessionStorage.getItem('authToken');
+
+    if (!authToken) {
+        alert("Unauthorized: No authentication token found.");
+        return;
+    }
+
+    // Backend API URL for unarchive
+    const apiUrl = `http://localhost:8000/api/unarchive-class/${classId}`;
+
+    // Make the API request
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Class unarchived successfully!");
+            // Optionally, redirect or update UI
+            window.location.href = "http://localhost/ums/public/all-classes";
+        } else {
+            alert("Failed to unarchive class: " + (data.message || "Unknown error"));
+        }
+    })
+    .catch(error => {
+        console.error("Error unarchiving class:", error);
+        alert("An error occurred while unarchiving the class.");
+    });
+}
 
 
     </script>

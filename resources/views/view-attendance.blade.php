@@ -450,56 +450,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // now i will write the code to update the attendance status and cause if any is changed and the api endpoint is http://localhost:8000/api/edit-attendance/${classId} knowing that the table that has the attendace has an id of attendance-table and the submit button has an id of submitAttendance
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
