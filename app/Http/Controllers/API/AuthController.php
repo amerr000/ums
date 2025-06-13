@@ -24,7 +24,7 @@ class AuthController extends Controller
         $teacher = Teacher::where('email', $request->email)->first();
         
         // if the teacher does not exist
-        if (! $teacher || !($request->password == $teacher->password)) {
+        if (! $teacher || !(password_verify($request->password,$teacher->password))) {
             return response([
                 'message' => ['The provided credentials are incorrect.']
             ], 404);
