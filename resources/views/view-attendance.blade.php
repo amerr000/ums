@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Medico - Bootstrap Admin Dashboard</title>
+    <title>ums</title>
     <!-- Favicon icon -->
     <link href="vendor/fullcalendar/css/fullcalendar.min.css" rel="stylesheet">
     <link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
@@ -178,6 +178,18 @@
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-toggle="dropdown">
                                     <img src="images/profile/pic1.jpg" width="20" alt="" />
+                                       <div class="dropdown-menu dropdown-menu-right">
+                                    
+                                                   <a href="#" id="logout-link" class="dropdown-item ai-icon">
+    <svg id="icon-logout" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+    </svg>
+    <span class="ml-2">Logout</span>
+</a>
+
+                                </div>
                                 </a>
                             </li>
                         </ul>
@@ -245,7 +257,7 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 align="center">Introduction to Computer Science section A</h4>
+                                <h4 align="center"></h4>
                                 
                     <div class="mb-3">
                     <label for="attendanceDate" class="form-label">Select Date</label>
@@ -320,6 +332,18 @@
 
 
     <script>
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+        const authToken = sessionStorage.getItem('authToken');
+
+        if (!authToken) {
+            // Redirect to login page if no token is found
+            window.location.href = "{{ url('/') }}";
+        
+        }
+    });
+
   // Set the max attribute to today's date dynamically
   document.getElementById('attendanceDate').setAttribute('max', new Date().toISOString().split('T')[0]);
 
@@ -341,7 +365,7 @@ headers: {
 if (response.ok) {
 // Logout was successful
 sessionStorage.removeItem('authToken'); // Clear the token from storage
-window.location.href = '/'; // Redirect to the desired page after logout
+window.location.href = "{{ url('/') }}"; // Redirect to the desired page after logout
 } else {
 // Handle errors, e.g., token invalid or server issues
 console.error('Logout failed:', response.statusText);

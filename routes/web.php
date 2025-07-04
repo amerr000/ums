@@ -59,6 +59,7 @@ Route::get('/edit-student', function () {
 
 Route::get('/specific-student', function () {
     return view('specific-student');
+    
 });
 
 Route::get('/take-attendance', function () {

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Medico - Bootstrap Admin Dashboard</title>
+    <title>ums</title>
     <link href="vendor/fullcalendar/css/fullcalendar.min.css" rel="stylesheet">
     <link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -212,6 +212,9 @@
     <script src="js/plugins-init/fullcalendar-init.js"></script>
 
     <script>
+    const logoutRedirectUrl = "{{ url('/') }}";
+</script>
+    <script>
         // Retrieve the token from sessionStorage
         const authToken = sessionStorage.getItem('authToken');
 
@@ -261,7 +264,7 @@
             });
         } else {
             // Redirect to login page if no token is found
-            window.location.href = '/';
+            window.location.href = logoutRedirectUrl;
         }
 
 
@@ -282,7 +285,7 @@
         if (response.ok) {
             // Logout was successful
             sessionStorage.removeItem('authToken'); // Clear the token from storage
-            window.location.href = '/'; // Redirect to the desired page after logout
+            window.location.href = logoutRedirectUrl; // Redirect to the desired page after logout
         } else {
             // Handle errors, e.g., token invalid or server issues
             console.error('Logout failed:', response.statusText);

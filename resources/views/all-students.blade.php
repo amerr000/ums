@@ -247,6 +247,19 @@
     <script src="js/custom.min.js"></script>
 
     <script>
+
+
+ const authToken = sessionStorage.getItem('authToken');
+
+        if (!authToken) {
+            // Redirect to login page if no token is found
+            window.location.href = "{{ url('/') }}";
+        }
+      
+
+
+
+
         // Fetching student data and displaying it on the page
         async function fetchStudents() {
             const token = sessionStorage.getItem('authToken');
@@ -320,7 +333,7 @@ headers: {
 if (response.ok) {
 // Logout was successful
 sessionStorage.removeItem('authToken'); // Clear the token from storage
-window.location.href = '/'; // Redirect to the desired page after logout
+window.location.href = "{{ url('/') }}"; // Redirect to the desired page after logout
 } else {
 // Handle errors, e.g., token invalid or server issues
 console.error('Logout failed:', response.statusText);

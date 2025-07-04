@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Medico - Bootstrap Admin Dashboard</title>
+    <title>ums</title>
     <!-- Favicon icon -->
     <link href="vendor/fullcalendar/css/fullcalendar.min.css" rel="stylesheet">
     <link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
@@ -154,6 +154,18 @@
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-toggle="dropdown">
                                     <img src="images/profile/pic1.jpg" width="20" alt="" />
+                                      <div class="dropdown-menu dropdown-menu-right">
+                                    
+                                                   <a href="#" id="logout-link" class="dropdown-item ai-icon">
+    <svg id="icon-logout" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+    </svg>
+    <span class="ml-2">Logout</span>
+</a>
+
+                                </div>
                                 </a>
                             </li>
                         </ul>
@@ -263,7 +275,15 @@
     <script>
 
 
+  document.addEventListener('DOMContentLoaded', function () {
+        const authToken = sessionStorage.getItem('authToken');
 
+        if (!authToken) {
+            // Redirect to login page if no token is found
+            window.location.href = "{{ url('/') }}";
+        
+        }
+    });
 
 
 
@@ -355,117 +375,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Function to fetch student data from the API and populate the form
-async function fetchStudentData() {
-    // Get the authentication token from session storage
-    const authToken = sessionStorage.getItem('authToken');
-    
-    if (!authToken) {
-        alert('Authentication token not found!');
-        return;
-    }
-
-    // URL to fetch data from
-    const apiUrl = 'http://localhost:8000/api/view-students-in-class/'+classId;
-
-    try {
-        // Fetch student data from the API
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        const data = await response.json();
-
-        // Check if the API returns students data
-        if (data && data.students && Array.isArray(data.students)) {
-            const studentDataContainer = document.querySelector('.student-data');
-            studentDataContainer.innerHTML = ''; // Clear any existing data in the table body
-
-            // Iterate through the students and populate the table
-            data.students.forEach(student => {
-                const row = document.createElement('tr');
-
-                // Add student ID
-                const studentIdCell = document.createElement('td');
-                studentIdCell.textContent = student.university_id;
-                row.appendChild(studentIdCell);
-
-                // Add hidden input for student ID
-                const studentIdInput = document.createElement('input');
-                studentIdInput.type = 'hidden';
-                studentIdInput.name = 'student_id';
-                studentIdInput.value = student.id;
-                row.appendChild(studentIdInput);
-
-                // Add student name
-                const studentNameCell = document.createElement('td');
-                studentNameCell.textContent = student.fullname;
-                row.appendChild(studentNameCell);
-
-                // Add attendance checkbox with label and switch styling
-                const attendanceCell = document.createElement('td');
-                const attendanceLabel = document.createElement('label');
-                attendanceLabel.classList.add('switch');
-
-                const attendanceCheckbox = document.createElement('input');
-                attendanceCheckbox.type = 'checkbox';
-                attendanceCheckbox.name = `attendance[${student.id}]`; // Dynamic name for each student
-
-                const slider = document.createElement('span');
-                slider.classList.add('slider', 'round');
-
-                attendanceLabel.appendChild(attendanceCheckbox);
-                attendanceLabel.appendChild(slider);
-                attendanceCell.appendChild(attendanceLabel);
-                row.appendChild(attendanceCell);
-
-                // Add cause of absence text input
-                const causeCell = document.createElement('td');
-                const causeInput = document.createElement('input');
-                causeInput.type = 'text';
-                causeInput.classList.add('cause');
-                causeCell.appendChild(causeInput);
-                row.appendChild(causeCell);
-
-                // Append the row to the table body
-                studentDataContainer.appendChild(row);
-            });
-        } else {
-            console.error('No student data found.');
-        }
-    } catch (error) {
-        console.error('Error fetching student data:', error);
-    }
-}
-
-// Run the fetchStudentData function when the page is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    fetchStudentData();
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -489,7 +398,6 @@ async function fetchStudentData() {
     const authToken = sessionStorage.getItem('authToken');
     
     if (!authToken) {
-        alert('Authentication token not found!');
         return;
     }
 
@@ -584,11 +492,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Run the fetchStudentData function when the page is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    fetchStudentData();
-});
-
 
 
 
@@ -619,7 +522,7 @@ headers: {
 if (response.ok) {
 // Logout was successful
 sessionStorage.removeItem('authToken'); // Clear the token from storage
-window.location.href = '/'; // Redirect to the desired page after logout
+window.location.href = "{{ url('/') }}"; // Redirect to the desired page after logout
 } else {
 // Handle errors, e.g., token invalid or server issues
 console.error('Logout failed:', response.statusText);

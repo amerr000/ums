@@ -8,7 +8,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Medico - Bootstrap Admin Dashboard </title>
+    <title>ums </title>
     <!-- Favicon icon -->
     <link href="vendor/fullcalendar/css/fullcalendar.min.css" rel="stylesheet">
 	<link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
@@ -310,7 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Check if user is authenticated
     const authToken = sessionStorage.getItem('authToken');
     if (!authToken) {
-        window.location.href = "/"; // Redirect to login page
+        window.location.href = "{{ url('/') }}"; // Redirect to login page
         return;
     }
 
@@ -376,7 +376,7 @@ headers: {
 if (response.ok) {
 // Logout was successful
 sessionStorage.removeItem('authToken'); // Clear the token from storage
-window.location.href = '/'; // Redirect to the desired page after logout
+window.location.href = "{{ url('/') }}"; // Redirect to the desired page after logout
 } else {
 // Handle errors, e.g., token invalid or server issues
 console.error('Logout failed:', response.statusText);

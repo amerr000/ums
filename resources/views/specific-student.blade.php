@@ -8,7 +8,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Medico - Bootstrap Admin Dashboard </title>
+    <title>ums </title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <link rel="stylesheet" href="vendor/jqvmap/css/jqvmap.min.css">
@@ -263,18 +263,18 @@
 								<div class="profile-photo">
 									<img src="images/patients/patient_avatar.png" width="100" class="img-fluid rounded-circle" alt="">
 								</div>
-								<h3 class="mt-3 mb-1 text-white">Amer Reslan</h3>
+								<h3 class="mt-3 mb-1 text-white"></h3>
 							</div>
 							<ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Student ID</span> <strong class="text-muted">22131585</strong></li>
-                            <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Study Mode</span> <strong class="text-muted">Remote</strong></li>
+                            <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Student ID</span> <strong class="text-muted"></strong></li>
+                            <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Study Mode</span> <strong class="text-muted"></strong></li>
 
-                            <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Nationality</span> <strong class="text-muted">American</strong></li>
-                            <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Email</span> <strong class="text-muted">amerreslan@gmail.com</strong></li>
+                            <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Nationality</span> <strong class="text-muted"></strong></li>
+                            <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Email</span> <strong class="text-muted"></strong></li>
 
-								<li class="list-group-item d-flex justify-content-between"><span class="mb-0">Gender</span> <strong class="text-muted">Male</strong></li>
-								<li class="list-group-item d-flex justify-content-between"><span class="mb-0">Years Old</span> 		<strong class="text-muted">21</strong></li>
-                                <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Phone Number</span> <strong class="text-muted">71860796</strong></li>
+								<li class="list-group-item d-flex justify-content-between"><span class="mb-0">Gender</span> <strong class="text-muted"></strong></li>
+								<li class="list-group-item d-flex justify-content-between"><span class="mb-0">Years Old</span> 		<strong class="text-muted"></strong></li>
+                                <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Phone Number</span> <strong class="text-muted"></strong></li>
 
                                 
 
@@ -305,35 +305,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>CSE101</td>
-                <td>Introduction to Computer Science</td>
-                <td>5</td>
-                <td>30</td>
-                <td>83.33%</td>
-            </tr>
-            <tr>
-                <td>MTH202</td>
-                <td>Calculus II</td>
-                <td>2</td>
-                <td>28</td>
-                <td>92.86%</td>
-            </tr>
-            <tr>
-                <td>PHY303</td>
-                <td>Physics for Engineers</td>
-                <td>4</td>
-                <td>32</td>
-                <td>87.50%</td>
-            </tr>
-            <!-- Add a row for another course -->
-            <tr>
-                <td>BIO101</td>
-                <td>Biology Fundamentals</td>
-                <td>1</td>
-                <td>35</td>
-                <td>97.14%</td>
-            </tr>
+        
         </tbody>
     </table>
 </div>
@@ -464,6 +436,18 @@
 
 <script>
 
+
+  document.addEventListener('DOMContentLoaded', function () {
+        const authToken = sessionStorage.getItem('authToken');
+
+        if (!authToken) {
+            // Redirect to login page if no token is found
+            window.location.href = "{{ url('/') }}";
+        
+        }
+    });
+
+
 async function logout() {
 
 const authToken = sessionStorage.getItem('authToken');
@@ -480,7 +464,7 @@ headers: {
 if (response.ok) {
 // Logout was successful
 sessionStorage.removeItem('authToken'); // Clear the token from storage
-window.location.href = '/'; // Redirect to the desired page after logout
+window.location.href = "{{ url('/') }}"; // Redirect to the desired page after logout
 } else {
 // Handle errors, e.g., token invalid or server issues
 console.error('Logout failed:', response.statusText);
