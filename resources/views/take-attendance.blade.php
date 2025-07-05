@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Send API request
             try {
-                const response = await fetch(`http://localhost:8000/api/create-attendance/${classId}`, {
+                const response = await fetch(`http://13.53.198.104/api/create-attendance/${classId}`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -402,7 +402,7 @@ async function fetchStudentData() {
     }
 
     // URL to fetch data from
-    const apiUrl = 'http://localhost:8000/api/view-students-in-class/1';
+    const apiUrl = 'http://13.53.198.104/api/view-students-in-class/1';
 
     try {
         // Fetch student data from the API
@@ -511,7 +511,7 @@ async function logout() {
 const authToken = sessionStorage.getItem('authToken');
 
 try {
-const response = await fetch('http://localhost:8000/api/logout', {
+const response = await fetch('http://13.53.198.104/api/logout', {
 method: 'POST',
 headers: {
     'Authorization': `Bearer ${authToken}`,

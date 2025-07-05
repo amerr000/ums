@@ -215,7 +215,7 @@
         async function logout() {
             const authToken = sessionStorage.getItem('authToken');
             try {
-                const response = await fetch('http://localhost:8000/api/logout', {
+                const response = await fetch('http://13.53.198.104/api/logout', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -257,7 +257,7 @@
 
             async function fetchStudentData(studentId, authToken) {
                 try {
-                    const response = await fetch(`http://localhost:8000/api/show-student/${studentId}`, {
+                    const response = await fetch(`http://13.53.198.104/api/show-student/${studentId}`, {
                         method: "GET",
                         headers: {
                             "Authorization": `Bearer ${authToken}`
@@ -303,7 +303,7 @@
                     phone_number: document.getElementById("phone_number").value,
                 };
                 try {
-                    const response = await fetch(`http://localhost:8000/api/edit-student/${studentId}`, {
+                    const response = await fetch(`http://13.53.198.104/api/edit-student/${studentId}`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",

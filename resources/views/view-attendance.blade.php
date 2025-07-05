@@ -354,7 +354,7 @@
 const authToken = sessionStorage.getItem('authToken');
 
 try {
-const response = await fetch('http://localhost:8000/api/logout', {
+const response = await fetch('http://13.53.198.104/api/logout', {
 method: 'POST',
 headers: {
     'Authorization': `Bearer ${authToken}`,
@@ -417,7 +417,7 @@ logout();
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const classId = urlParams.get('id'); 
-    const apiUrl = `http://localhost:8000/api/get-class-summary/${classId}`;
+    const apiUrl = `http://13.53.198.104/api/get-class-summary/${classId}`;
 
     async function fetchClassSummary() {
         try {
@@ -466,11 +466,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// now i will write the code to update the attendance status and cause if any is changed and the api endpoint is http://localhost:8000/api/edit-attendance/${classId} knowing that the table that has the attendace has an id of attendance-table and the submit button has an id of submitAttendance
+// now i will write the code to update the attendance status and cause if any is changed and the api endpoint is http://13.53.198.104/api/edit-attendance/${classId} knowing that the table that has the attendace has an id of attendance-table and the submit button has an id of submitAttendance
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const classId = urlParams.get('id'); 
-    const apiUrl = `http://localhost:8000/api/edit-attendance/${classId}`;
+    const apiUrl = `http://13.53.198.104/api/edit-attendance/${classId}`;
     const attendanceDateInput = document.getElementById('attendanceDate');
     const submitBtn = document.getElementById('submitAttendance');
     const attendanceTable = document.querySelector('form table'); // or use an id for more specificity
@@ -479,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchAttendanceDetails(date) {
         try {
-            const response = await fetch(`http://localhost:8000/api/get-attendance-details/${classId}?date=${date}`, {
+            const response = await fetch(`http://13.53.198.104/api/get-attendance-details/${classId}?date=${date}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`,

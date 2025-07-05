@@ -331,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
         try {
-            const response = await fetch("http://localhost:8000/api/create-student", {
+            const response = await fetch("http://13.53.198.104/api/create-student", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -365,7 +365,7 @@ async function logout() {
 const authToken = sessionStorage.getItem('authToken');
 
 try {
-const response = await fetch('http://localhost:8000/api/logout', {
+const response = await fetch('http://13.53.198.104/api/logout', {
 method: 'POST',
 headers: {
     'Authorization': `Bearer ${authToken}`,

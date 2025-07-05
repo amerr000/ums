@@ -214,7 +214,7 @@
         const authToken = sessionStorage.getItem('authToken');
 
         if (authToken) {
-            const apiUrl = 'http://localhost:8000/api/view-current-term-classes'; // Replace with your API URL
+            const apiUrl = 'http://13.53.198.104/api/view-current-term-classes'; // Replace with your API URL
 
             fetch(apiUrl, {
                 method: 'GET',
@@ -269,7 +269,7 @@
             const authToken = sessionStorage.getItem('authToken');
 
     try {
-        const response = await fetch('http://localhost:8000/api/logout', {
+        const response = await fetch('http://13.53.198.104/api/logout', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -324,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function fetchCourses(query) {
         try {
-            const response = await fetch(`http://localhost:8000/api/getCourseIdNameSection/${query}`, {
+            const response = await fetch(`http://13.53.198.104/api/getCourseIdNameSection/${query}`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${authToken}`,

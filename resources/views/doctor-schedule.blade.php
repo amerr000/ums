@@ -331,7 +331,7 @@ async function logout() {
 const authToken = sessionStorage.getItem('authToken');
 
 try {
-const response = await fetch('http://localhost:8000/api/logout', {
+const response = await fetch('http://13.53.198.104/api/logout', {
 method: 'POST',
 headers: {
     'Authorization': `Bearer ${authToken}`,
@@ -403,7 +403,7 @@ $(document).ready(function() {
         },
       events: function(start, end, timezone, callback) {
     $.ajax({
-        url: 'http://localhost:8000/api/view-all-events',
+        url: 'http://13.53.198.104/api/view-all-events',
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${authToken}`
@@ -496,7 +496,7 @@ function onSelect(start, end) {
             var description = form.find("textarea[name='description']").val();
             if (title) {
                 $.ajax({
-                    url: 'http://localhost:8000/api/create-event',
+                    url: 'http://13.53.198.104/api/create-event',
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -538,7 +538,7 @@ function onSelect(start, end) {
         form.append("<div class='form-group'><textarea class='form-control' name='description'>" + (event.description || '') + "</textarea></div>");
         modal.find(".delete-event").show().end().find(".save-event").hide().end().find(".modal-body").empty().prepend(form).end().find(".delete-event").unbind("click").on("click", function() {
             $.ajax({
-                url: 'http://localhost:8000/api/delete-event/' + event.id,
+                url: 'http://13.53.198.104/api/delete-event/' + event.id,
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${authToken}`
@@ -556,7 +556,7 @@ function onSelect(start, end) {
             event.title = form.find("input[type=text]").val();
             event.description = form.find("textarea[name='description']").val();
             $.ajax({
-                url: 'http://localhost:8000/api/edit-event/' + event.id,
+                url: 'http://13.53.198.104/api/edit-event/' + event.id,
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
