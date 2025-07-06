@@ -219,7 +219,7 @@
         const authToken = sessionStorage.getItem('authToken');
 
         if (authToken) {
-            const apiUrl = 'http://13.53.198.104/api/classes'; // Replace with your API URL
+            const apiUrl = 'https://webbogo.org/api/classes'; // Replace with your API URL
 
             fetch(apiUrl, {
                 method: 'GET',
@@ -274,7 +274,7 @@
             const authToken = sessionStorage.getItem('authToken');
 
     try {
-        const response = await fetch('http://13.53.198.104/api/logout', {
+        const response = await fetch('https://webbogo.org/api/logout', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -320,7 +320,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function fetchCourses(query) {
         try {
-            const response = await fetch(`http://13.53.198.104/api/getCourseIdNameSection/${query}`, {
+            const response = await fetch(`https://webbogo.org/api/getCourseIdNameSection/${query}`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${authToken}`,

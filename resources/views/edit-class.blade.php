@@ -311,7 +311,7 @@ async function logout() {
 const authToken = sessionStorage.getItem('authToken');
 
 try {
-const response = await fetch('http://13.53.198.104/api/logout', {
+const response = await fetch('https://webbogo.org/api/logout', {
 method: 'POST',
 headers: {
     'Authorization': `Bearer ${authToken}`,
@@ -380,7 +380,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             try {
                 // Fetch class data from API
-                const response = await fetch(`http://13.53.198.104/api/specific-class/${classId}`, {
+                const response = await fetch(`https://webbogo.org/api/specific-class/${classId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -427,7 +427,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 };
 
                 try {
-                    const response = await fetch(`http://13.53.198.104/api/edit-class/${classId}`, {
+                    const response = await fetch(`https://webbogo.org/api/edit-class/${classId}`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",

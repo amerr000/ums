@@ -325,7 +325,7 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
         try {
-            const response = await fetch("http://13.53.198.104/api/add-class", {
+            const response = await fetch("https://webbogo.org/api/add-class", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -355,7 +355,7 @@ async function logout() {
 const authToken = sessionStorage.getItem('authToken');
 
 try {
-const response = await fetch('http://13.53.198.104/api/logout', {
+const response = await fetch('https://webbogo.org/api/logout', {
 method: 'POST',
 headers: {
     'Authorization': `Bearer ${authToken}`,

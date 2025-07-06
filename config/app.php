@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://13.53.198.104'),
+    'url' => env('APP_URL', 'https://webbogo.org'),
 
     'asset_url' => env('ASSET_URL'),
 

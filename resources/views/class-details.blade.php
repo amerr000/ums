@@ -476,7 +476,7 @@
 // Get the value of the 'id' parameter
 if (authToken) {
     const id = urlParams.get('id'); // Get the 'id' parameter from the URL
-    const apiUrl = `http://13.53.198.104/api/specific-class/${id}`; // Use template literal for the API URL
+    const apiUrl = `https://webbogo.org/api/specific-class/${id}`; // Use template literal for the API URL
      // Update the <a> tag's href dynamically
      if (id) {
         document.getElementById('attendanceLink').href = `take-attendance?id=${id}`;
@@ -595,7 +595,7 @@ function confirmDelete() {
     }
 
     // Backend API URL with course ID
-    const apiUrl = `http://13.53.198.104/api/delete-specific-class/${courseId}`;
+    const apiUrl = `https://webbogo.org/api/delete-specific-class/${courseId}`;
 
     // Make the API request
     fetch(apiUrl, {
@@ -651,7 +651,7 @@ function archive() {
     }
 
     // Backend API URL
-    const apiUrl = `http://13.53.198.104/api/archive-class/${classId}`;
+    const apiUrl = `https://webbogo.org/api/archive-class/${classId}`;
 
     // Make the API request
     fetch(apiUrl, {
@@ -688,7 +688,7 @@ function archive() {
             const authToken = sessionStorage.getItem('authToken');
 
     try {
-        const response = await fetch('http://13.53.198.104/api/logout', {
+        const response = await fetch('https://webbogo.org/api/logout', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -787,7 +787,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            const response = await fetch(`http://13.53.198.104/api/getNotRegisteredStudentsByName/${searchQuery}/${classId}`, {
+            const response = await fetch(`https://webbogo.org/api/getNotRegisteredStudentsByName/${searchQuery}/${classId}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Accept": "application/json"
@@ -871,7 +871,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const response = await fetch("http://13.53.198.104/api/enrollStudent", {
+            const response = await fetch("https://webbogo.org/api/enrollStudent", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -911,7 +911,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            const response = await fetch(`http://13.53.198.104/api/getNotRegisteredStudentsByName/${searchQuery}/${classId}`, {
+            const response = await fetch(`https://webbogo.org/api/getNotRegisteredStudentsByName/${searchQuery}/${classId}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Accept": "application/json"
@@ -1030,7 +1030,7 @@ function unarchive() {
     }
 
     // Backend API URL for unarchive
-    const apiUrl = `http://13.53.198.104/api/unarchive-class/${classId}`;
+    const apiUrl = `https://webbogo.org/api/unarchive-class/${classId}`;
 
     // Make the API request
     fetch(apiUrl, {

@@ -263,7 +263,7 @@
         // Fetching student data and displaying it on the page
         async function fetchStudents() {
             const token = sessionStorage.getItem('authToken');
-            const response = await fetch('http://13.53.198.104/api/view-all-students', {
+            const response = await fetch('https://webbogo.org/api/view-all-students', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -322,7 +322,7 @@
 const authToken = sessionStorage.getItem('authToken');
 
 try {
-const response = await fetch('http://13.53.198.104/api/logout', {
+const response = await fetch('https://webbogo.org/api/logout', {
 method: 'POST',
 headers: {
     'Authorization': `Bearer ${authToken}`,
@@ -391,7 +391,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Fetch students by search query
     async function fetchStudents(query) {
         try {
-            const response = await fetch(`http://13.53.198.104/api/getStudentIdName/${query}`, {
+            const response = await fetch(`https://webbogo.org/api/getStudentIdName/${query}`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${authToken}`,

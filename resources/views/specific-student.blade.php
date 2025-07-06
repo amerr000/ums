@@ -453,7 +453,7 @@ async function logout() {
 const authToken = sessionStorage.getItem('authToken');
 
 try {
-const response = await fetch('http://13.53.198.104/api/logout', {
+const response = await fetch('https://webbogo.org/api/logout', {
 method: 'POST',
 headers: {
     'Authorization': `Bearer ${authToken}`,
@@ -504,7 +504,7 @@ logout();
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("edit-button").href = `edit-student?id=${getClassIdFromURL()}`;
     const id=getClassIdFromURL();
-    const apiUrl = `http://13.53.198.104/api/get-student-summary/${id}`; // Update with the actual student ID
+    const apiUrl = `https://webbogo.org/api/get-student-summary/${id}`; // Update with the actual student ID
 
     async function fetchStudentData() {
         try {
@@ -601,7 +601,7 @@ function getClassIdFromURL() {
     
     // Get the student ID from the URL
     const studentId = getClassIdFromURL();
-    const url = `http://13.53.198.104/api/update-student-note/${studentId}`;
+    const url = `https://webbogo.org/api/update-student-note/${studentId}`;
 
     // Prepare the request payload
     const data = {
