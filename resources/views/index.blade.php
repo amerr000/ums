@@ -56,7 +56,7 @@
             const password = document.getElementById('password').value;
 
             // API URL
-            const apiUrl = 'http://13.53.198.104/api/login'; // Update to your actual login endpoint
+            const apiUrl = 'https://webbogo.org/api/login'; // Update to your actual login endpoint
 
             // Prepare data to send
             const data = {

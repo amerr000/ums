@@ -42,7 +42,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('view-all-events','App\Http\Controllers\API\EventController@index');// this should be added to postman
     Route::get('view-specific-event/{id}','App\Http\Controllers\API\EventController@showSpecificEvent');// this should be added to postman
     Route::post('edit-event/{id}','App\Http\Controllers\API\EventController@editEvent');// this should be added to postman
-    Route::post('create-attendance/{id}','App\Http\Controllers\API\studentController@takeAttendance');// this should be added to postman
+    Route::post('create-attendance/{id}','App\Http\Controllers\API\StudentController@takeAttendance');// this should be added to postman
     Route::post('archive-class/{id}','App\Http\Controllers\API\ClassController@archiveClass');// this should be added to postman
     Route::post('unarchive-class/{id}','App\Http\Controllers\API\ClassController@unarchiveClass');// this should be added to postman
     Route::get('getCourseIdNameSection/{search}','App\Http\Controllers\API\ClassController@getCourseIdNameSection');// this should be added to postman

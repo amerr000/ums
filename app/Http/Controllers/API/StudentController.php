@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 
 
-class studentController extends Controller
+class StudentController extends Controller
 {
 
 
